@@ -31,8 +31,7 @@ public class MesaController {
 
     @PostMapping
     public ResponseEntity<Mesa> create(@Valid @RequestBody Mesa mesa) {
-        Mesa created = mesaService.create(mesa);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        return ResponseEntity.status(HttpStatus.CREATED).body(mesaService.create(mesa));
     }
 
     @PutMapping("/{id}")

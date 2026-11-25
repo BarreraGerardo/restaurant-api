@@ -30,10 +30,25 @@ public class PedidoController {
         return ResponseEntity.ok(pedidoService.findById(id));
     }
 
-    @PostMapping("/mesa/{mesaId}")
-    public ResponseEntity<Pedido> create(@PathVariable Long mesaId, @Valid @RequestBody Pedido pedido) {
-        Pedido created = pedidoService.create(mesaId, pedido);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    @PostMapping
+    public ResponseEntity<Pedido> create(
+            @RequestParam(required = false) Long mesaId,
+            @Valid @RequestBody Pedido pedido
+    ) {
+        Long idMesaResuelto = mesaId != null
+                ? mesaId
+                : (pedido.getMesa() != null ? pedido.getMesa().getId() : null);
+
+        if (idMesaResuelto == null) {
+            throw new IllegalArgumentException("Debes enviar mesaId como parametro (?mesaId=1) o dentro del objeto mesa");
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(pedidoService.create(idMesaResuelto, pedido));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Pedido> update(@PathVariable Long id, @Valid @RequestBody Pedido pedido) {
+        return ResponseEntity.ok(pedidoService.update(id, pedido));
     }
 
     @PutMapping("/{id}/detalles")

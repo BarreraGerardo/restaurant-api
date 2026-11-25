@@ -59,6 +59,27 @@ public class PedidoService {
         return pedidoRepository.save(pedido);
     }
 
+    public Pedido update(Long id, Pedido pedidoActualizado) {
+        Pedido existente = findById(id);
+
+        if (pedidoActualizado.getMesa() != null && pedidoActualizado.getMesa().getId() != null) {
+            Long nuevaMesaId = pedidoActualizado.getMesa().getId();
+            Mesa mesa = mesaRepository.findById(nuevaMesaId)
+                    .orElseThrow(() -> new EntityNotFoundException("Mesa no encontrada con id: " + nuevaMesaId));
+            existente.setMesa(mesa);
+        }
+
+        if (pedidoActualizado.getFecha() != null) {
+            existente.setFecha(pedidoActualizado.getFecha());
+        }
+
+        if (pedidoActualizado.getDetalles() != null && !pedidoActualizado.getDetalles().isEmpty()) {
+            return updateDetalles(id, pedidoActualizado.getDetalles());
+        }
+
+        return pedidoRepository.save(existente);
+    }
+
     public Pedido updateDetalles(Long id, List<DetallePedido> nuevosDetalles) {
         Pedido existente = findById(id);
 
